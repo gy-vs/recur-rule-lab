@@ -397,10 +397,11 @@ export default class ToText {
 
   private _byhour() {
     const gettext = this.gettext
+    const byhour = ([] as number[])
+      .concat(this.origOptions.byhour)
+      .sort((a, b) => a - b)
 
-    this.add(gettext('at')).add(
-      this.list(this.origOptions.byhour, undefined, gettext('and'))
-    )
+    this.add(gettext('at')).add(this.list(byhour, undefined, gettext('and')))
   }
 
   private _bymonth() {

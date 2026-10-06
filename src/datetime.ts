@@ -145,15 +145,28 @@ export class DateTime extends Time {
       this.hour += Math.floor((23 - this.hour) / hours) * hours
     }
 
-    for (;;) {
-      this.hour += hours
-      const { div: dayDiv, mod: hourMod } = divmod(this.hour, 24)
-      if (dayDiv) {
-        this.hour = hourMod
-        this.addDaily(dayDiv)
-      }
+    this.addRawHours(hours)
 
-      if (empty(byhour) || includes(byhour, this.hour)) break
+    while (!empty(byhour) && !includes(byhour, this.hour)) {
+      this.addRawHours(hours)
+    }
+  }
+
+  private addRawHours(hours: number) {
+    this.hour += hours
+    const { div: dayDiv, mod: hourMod } = divmod(this.hour, 24)
+    if (dayDiv) {
+      this.hour = hourMod
+      this.addDaily(dayDiv)
+    }
+  }
+
+  private addRawMinutes(minutes: number) {
+    this.minute += minutes
+    const { div: hourDiv, mod: minuteMod } = divmod(this.minute, 60)
+    if (hourDiv) {
+      this.minute = minuteMod
+      this.addRawHours(hourDiv)
     }
   }
 
@@ -170,12 +183,7 @@ export class DateTime extends Time {
     }
 
     for (;;) {
-      this.minute += minutes
-      const { div: hourDiv, mod: minuteMod } = divmod(this.minute, 60)
-      if (hourDiv) {
-        this.minute = minuteMod
-        this.addHours(hourDiv, false, byhour)
-      }
+      this.addRawMinutes(minutes)
 
       if (
         (empty(byhour) || includes(byhour, this.hour)) &&
@@ -183,6 +191,15 @@ export class DateTime extends Time {
       ) {
         break
       }
+    }
+  }
+
+  private addRawSeconds(seconds: number) {
+    this.second += seconds
+    const { div: minuteDiv, mod: secondMod } = divmod(this.second, 60)
+    if (minuteDiv) {
+      this.second = secondMod
+      this.addRawMinutes(minuteDiv)
     }
   }
 
@@ -203,12 +220,7 @@ export class DateTime extends Time {
     }
 
     for (;;) {
-      this.second += seconds
-      const { div: minuteDiv, mod: secondMod } = divmod(this.second, 60)
-      if (minuteDiv) {
-        this.second = secondMod
-        this.addMinutes(minuteDiv, false, byhour, byminute)
-      }
+      this.addRawSeconds(seconds)
 
       if (
         (empty(byhour) || includes(byhour, this.hour)) &&

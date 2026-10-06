@@ -181,6 +181,9 @@ export function parseOptions(options: Partial<Options>) {
   } else if (isNumber(opts.byhour)) {
     opts.byhour = [opts.byhour]
   }
+  if (isArray(opts.byhour)) {
+    opts.byhour = opts.byhour.slice().sort((a, b) => a - b)
+  }
 
   // byminute
   if (!isPresent(opts.byminute)) {
@@ -189,6 +192,9 @@ export function parseOptions(options: Partial<Options>) {
   } else if (isNumber(opts.byminute)) {
     opts.byminute = [opts.byminute]
   }
+  if (isArray(opts.byminute)) {
+    opts.byminute = opts.byminute.slice().sort((a, b) => a - b)
+  }
 
   // bysecond
   if (!isPresent(opts.bysecond)) {
@@ -196,6 +202,9 @@ export function parseOptions(options: Partial<Options>) {
       opts.freq < RRule.SECONDLY ? [opts.dtstart.getUTCSeconds()] : null
   } else if (isNumber(opts.bysecond)) {
     opts.bysecond = [opts.bysecond]
+  }
+  if (isArray(opts.bysecond)) {
+    opts.bysecond = opts.bysecond.slice().sort((a, b) => a - b)
   }
 
   return { parsedOptions: opts as ParsedOptions }
