@@ -2,7 +2,13 @@ import ENGLISH, { Language } from './i18n'
 import { RRule } from '../rrule'
 import { Options, ByWeekday } from '../types'
 import { Weekday } from '../weekday'
-import { isArray, isNumber, isPresent } from '../helpers'
+import {
+  isArray,
+  isNumber,
+  isPresent,
+  sortAscending,
+  toArray,
+} from '../helpers'
 
 // =============================================================================
 // Helper functions
@@ -399,7 +405,11 @@ export default class ToText {
     const gettext = this.gettext
 
     this.add(gettext('at')).add(
-      this.list(this.origOptions.byhour, undefined, gettext('and'))
+      this.list(
+        sortAscending(toArray(this.origOptions.byhour)),
+        undefined,
+        gettext('and')
+      )
     )
   }
 

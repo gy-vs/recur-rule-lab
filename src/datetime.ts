@@ -147,11 +147,7 @@ export class DateTime extends Time {
 
     for (;;) {
       this.hour += hours
-      const { div: dayDiv, mod: hourMod } = divmod(this.hour, 24)
-      if (dayDiv) {
-        this.hour = hourMod
-        this.addDaily(dayDiv)
-      }
+      this.fixHour()
 
       if (empty(byhour) || includes(byhour, this.hour)) break
     }
@@ -174,7 +170,8 @@ export class DateTime extends Time {
       const { div: hourDiv, mod: minuteMod } = divmod(this.minute, 60)
       if (hourDiv) {
         this.minute = minuteMod
-        this.addHours(hourDiv, false, byhour)
+        this.hour += hourDiv
+        this.fixHour()
       }
 
       if (
@@ -207,7 +204,13 @@ export class DateTime extends Time {
       const { div: minuteDiv, mod: secondMod } = divmod(this.second, 60)
       if (minuteDiv) {
         this.second = secondMod
-        this.addMinutes(minuteDiv, false, byhour, byminute)
+        this.minute += minuteDiv
+        const { div: hourDiv, mod: minuteMod } = divmod(this.minute, 60)
+        if (hourDiv) {
+          this.minute = minuteMod
+          this.hour += hourDiv
+          this.fixHour()
+        }
       }
 
       if (
@@ -217,6 +220,14 @@ export class DateTime extends Time {
       ) {
         break
       }
+    }
+  }
+
+  public fixHour() {
+    const { div: dayDiv, mod: hourMod } = divmod(this.hour, 24)
+    if (dayDiv) {
+      this.hour = hourMod
+      this.addDaily(dayDiv)
     }
   }
 

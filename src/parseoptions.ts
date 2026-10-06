@@ -6,6 +6,7 @@ import {
   isNumber,
   isArray,
   isWeekdayStr,
+  sortAscending,
 } from './helpers'
 import { RRule, defaultKeys, DEFAULT_OPTIONS } from './rrule'
 import { getWeekday, isDate, isValidDate } from './dateutil'
@@ -197,6 +198,14 @@ export function parseOptions(options: Partial<Options>) {
   } else if (isNumber(opts.bysecond)) {
     opts.bysecond = [opts.bysecond]
   }
+
+  // The time-of-day options must be sorted so that occurrences are
+  // generated in chronological order, no matter the order in which they
+  // were provided. Sort copies of the arrays so that the originally
+  // passed-in options (used e.g. by toString()) keep their given order.
+  if (notEmpty(opts.byhour)) opts.byhour = sortAscending(opts.byhour)
+  if (notEmpty(opts.byminute)) opts.byminute = sortAscending(opts.byminute)
+  if (notEmpty(opts.bysecond)) opts.bysecond = sortAscending(opts.bysecond)
 
   return { parsedOptions: opts as ParsedOptions }
 }

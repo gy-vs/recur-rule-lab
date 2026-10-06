@@ -3682,6 +3682,257 @@ describe('RRule', function () {
   )
 
   testRecurring(
+    'testDailyByHourUnsorted',
+    new RRule({
+      freq: RRule.DAILY,
+      count: 4,
+      byhour: [16, 1],
+      dtstart: parse('20240101T000000'),
+    }),
+    [
+      datetime(2024, 1, 1, 1, 0),
+      datetime(2024, 1, 1, 16, 0),
+      datetime(2024, 1, 2, 1, 0),
+      datetime(2024, 1, 2, 16, 0),
+    ]
+  )
+
+  testRecurring(
+    'testDailyByMinuteUnsorted',
+    new RRule({
+      freq: RRule.DAILY,
+      count: 3,
+      byhour: 9,
+      byminute: [45, 15],
+      dtstart: parse('20240101T000000'),
+    }),
+    [
+      datetime(2024, 1, 1, 9, 15),
+      datetime(2024, 1, 1, 9, 45),
+      datetime(2024, 1, 2, 9, 15),
+    ]
+  )
+
+  testRecurring(
+    'testDailyBySecondUnsorted',
+    new RRule({
+      freq: RRule.DAILY,
+      count: 3,
+      byhour: 9,
+      byminute: 0,
+      bysecond: [50, 10],
+      dtstart: parse('20240101T000000'),
+    }),
+    [
+      datetime(2024, 1, 1, 9, 0, 10),
+      datetime(2024, 1, 1, 9, 0, 50),
+      datetime(2024, 1, 2, 9, 0, 10),
+    ]
+  )
+
+  testRecurring(
+    'testDailyByHourMinuteSecondUnsorted',
+    new RRule({
+      freq: RRule.DAILY,
+      count: 4,
+      byhour: [16, 1],
+      byminute: [45, 15],
+      bysecond: [50, 10],
+      dtstart: parse('20240101T000000'),
+    }),
+    [
+      datetime(2024, 1, 1, 1, 15, 10),
+      datetime(2024, 1, 1, 1, 15, 50),
+      datetime(2024, 1, 1, 1, 45, 10),
+      datetime(2024, 1, 1, 1, 45, 50),
+    ]
+  )
+
+  testRecurring(
+    'testWeeklyByHourUnsorted',
+    new RRule({
+      freq: RRule.WEEKLY,
+      count: 4,
+      byweekday: [RRule.MO, RRule.WE],
+      byhour: [16, 1],
+      dtstart: parse('20240101T000000'),
+    }),
+    [
+      datetime(2024, 1, 1, 1, 0),
+      datetime(2024, 1, 1, 16, 0),
+      datetime(2024, 1, 3, 1, 0),
+      datetime(2024, 1, 3, 16, 0),
+    ]
+  )
+
+  testRecurring(
+    'testHourlyByHourUnsorted',
+    new RRule({
+      freq: RRule.HOURLY,
+      count: 4,
+      byhour: [16, 1],
+      dtstart: parse('20240101T000000'),
+    }),
+    [
+      datetime(2024, 1, 1, 1, 0),
+      datetime(2024, 1, 1, 16, 0),
+      datetime(2024, 1, 2, 1, 0),
+      datetime(2024, 1, 2, 16, 0),
+    ]
+  )
+
+  testRecurring(
+    'testMinutelyByHourUnsorted',
+    new RRule({
+      freq: RRule.MINUTELY,
+      count: 4,
+      byhour: [16, 1],
+      dtstart: parse('20240101T000000'),
+    }),
+    [
+      datetime(2024, 1, 1, 1, 0),
+      datetime(2024, 1, 1, 1, 1),
+      datetime(2024, 1, 1, 1, 2),
+      datetime(2024, 1, 1, 1, 3),
+    ]
+  )
+
+  testRecurring(
+    'testMinutelyByMonthAndWeekDayAndHourUnsorted',
+    RRule.fromString(
+      'DTSTART:20231231T230000Z\n' +
+        'RRULE:FREQ=MINUTELY;BYMONTH=10,5;BYDAY=MO,WE;BYHOUR=16,1;COUNT=2'
+    ),
+    [datetime(2024, 5, 1, 1, 0), datetime(2024, 5, 1, 1, 1)]
+  )
+
+  testRecurring(
+    'testSecondlyByMinuteUnsorted',
+    new RRule({
+      freq: RRule.SECONDLY,
+      count: 4,
+      byminute: [45, 15],
+      dtstart: parse('20240101T000000'),
+    }),
+    [
+      datetime(2024, 1, 1, 0, 15, 0),
+      datetime(2024, 1, 1, 0, 15, 1),
+      datetime(2024, 1, 1, 0, 15, 2),
+      datetime(2024, 1, 1, 0, 15, 3),
+    ]
+  )
+
+  testRecurring(
+    'testMinutelyIntervalLargeByHour',
+    new RRule({
+      freq: RRule.MINUTELY,
+      count: 2,
+      interval: 90,
+      byhour: [3],
+      dtstart: parse('20240101T000000'),
+    }),
+    [datetime(2024, 1, 1, 3, 0), datetime(2024, 1, 2, 3, 0)]
+  )
+
+  testRecurring(
+    'testDailyByHourUnsortedBySetPos',
+    new RRule({
+      freq: RRule.DAILY,
+      count: 3,
+      byhour: [16, 1],
+      bysetpos: [1, -1],
+      dtstart: parse('20240101T000000'),
+    }),
+    [
+      datetime(2024, 1, 1, 1, 0),
+      datetime(2024, 1, 1, 16, 0),
+      datetime(2024, 1, 2, 1, 0),
+    ]
+  )
+
+  it('expands unsorted byhour/byminute/bysecond in ascending order for every frequency', function () {
+    const freqs = [
+      RRule.DAILY,
+      RRule.WEEKLY,
+      RRule.MONTHLY,
+      RRule.YEARLY,
+      RRule.HOURLY,
+      RRule.MINUTELY,
+      RRule.SECONDLY,
+    ]
+
+    for (const freq of freqs) {
+      const all = new RRule({
+        freq,
+        count: 20,
+        byhour: [16, 1, 8],
+        byminute: [45, 15, 30],
+        bysecond: [50, 10],
+        dtstart: parse('20240101T000000'),
+      }).all()
+
+      expect(all).toHaveLength(20)
+      for (let i = 1; i < all.length; i++) {
+        expect(all[i].getTime()).toBeGreaterThan(all[i - 1].getTime())
+      }
+    }
+  })
+
+  it('expands unsorted byhour/byminute/bysecond the same as sorted ones', function () {
+    const base = {
+      freq: RRule.DAILY,
+      count: 8,
+      dtstart: parse('20240101T000000'),
+    }
+    const sorted = new RRule({
+      ...base,
+      byhour: [1, 16],
+      byminute: [15, 45],
+      bysecond: [10, 50],
+    })
+    const unsorted = new RRule({
+      ...base,
+      byhour: [16, 1],
+      byminute: [45, 15],
+      bysecond: [50, 10],
+    })
+
+    expect(unsorted.all()).toEqual(sorted.all())
+  })
+
+  it('keeps the given byhour/byminute/bysecond order in toString()', function () {
+    const rule = new RRule({
+      freq: RRule.DAILY,
+      count: 4,
+      byhour: [16, 1],
+      byminute: [45, 15],
+      bysecond: [50, 10],
+      dtstart: parse('20240101T000000'),
+    })
+
+    expect(rule.toString()).toBe(
+      'DTSTART:20240101T000000Z\n' +
+        'RRULE:FREQ=DAILY;COUNT=4;BYHOUR=16,1;BYMINUTE=45,15;BYSECOND=50,10'
+    )
+  })
+
+  it('does not mutate the passed-in byhour/byminute/bysecond arrays', function () {
+    const options = {
+      freq: RRule.DAILY,
+      count: 4,
+      byhour: [16, 1],
+      byminute: [45, 15],
+      bysecond: [50, 10],
+      dtstart: parse('20240101T000000'),
+    }
+    new RRule(options)
+
+    expect(options.byhour).toEqual([16, 1])
+    expect(options.byminute).toEqual([45, 15])
+    expect(options.bysecond).toEqual([50, 10])
+  })
+
+  testRecurring(
     'testUntilNotMatching',
     new RRule({
       freq: RRule.DAILY,

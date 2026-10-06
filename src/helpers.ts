@@ -57,6 +57,13 @@ export const toArray = function <T>(item: T | T[]): T[] {
   return [item]
 }
 
+/**
+ * Return a copy of the array sorted in ascending numeric order
+ */
+export const sortAscending = function (arr: number[]): number[] {
+  return [...arr].sort((a, b) => a - b)
+}
+
 export function padStart(
   item: string | number,
   targetLength: number,

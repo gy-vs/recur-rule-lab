@@ -83,6 +83,20 @@ describe('NLP', () => {
     expect(rule.toText()).toBe('every week on the 3rd, 10th, 17th and 24th')
   })
 
+  it('sorts hours correctly', () => {
+    const rule = new RRule({
+      freq: RRule.DAILY,
+      byhour: [16, 1],
+      count: 4,
+    })
+    expect(rule.toText()).toBe('every day at 1 and 16 for 4 times')
+  })
+
+  it('sorts hours correctly when given as a string', () => {
+    const rule = RRule.fromString('RRULE:FREQ=DAILY;BYHOUR=16,1,8;COUNT=4')
+    expect(rule.toText()).toBe('every day at 1, 8 and 16 for 4 times')
+  })
+
   it('shows correct text for every day', () => {
     const options = {
       freq: RRule.WEEKLY,
